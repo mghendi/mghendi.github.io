@@ -1,0 +1,1 @@
+function DateUtil(){}DateUtil.parseISO8601Date=function(b){if("string"!=typeof b)return null;var a=b.split("-");if(3!=a.length)return null;b=parseInt(a[0]);var c=parseInt(a[1]),a=parseInt(a[2]);return isNaN(b+c+a)?null:new Date(b,c-1,a)};DateUtil.daysBetween=function(b,a){return"object"!=typeof b||"object"!=typeof a?0:Math.ceil((a.getTime()-b.getTime())/864E5)};
