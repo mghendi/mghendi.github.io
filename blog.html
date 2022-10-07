@@ -253,7 +253,7 @@
             <li><a href="#nowhere" title="Pellentesque fermentum dolor">Op-Ed</a></li>
           </ul>
         </nav>
-        <p>Samuel Mwamburi &copy; 2021</p>
+        <p>Samuel Mwamburi &copy; 2022</p>
       </aside>
       <a id="nav-toggle" href="#!" class="position"><span></span></a>
     <main>
@@ -263,25 +263,44 @@
         </div>
       </header>
       <article>
-        <h2>Article Title</h2>
-        <time>May 1st, 2021</time>
-            <p><a href="http://www.taniarascia.com/off-canvas-navigation" target="_blank">Click here to view the tutorial</a>.</p>
-        <p>Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vestibulum tortor quam, feugiat vitae, ultricies eget, tempor sit amet, ante. Donec eu libero sit amet quam egestas semper. Aenean ultricies mi vitae est.
-          Mauris placerat eleifend leo.</p>
-        <h3>Lorem Ipsum</h3>
-        <p>Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.</p>
-        <ul>
-          <li>Morbi in sem quis dui placerat ornare. Pellentesque odio nisi, euismod in, pharetra a, ultricies in, diam. Sed arcu. Cras consequat.</li>
-          <li>Praesent dapibus, neque id cursus faucibus, tortor neque egestas augue, eu vulputate magna eros eu erat. Aliquam erat volutpat. Nam dui mi, tincidunt quis, accumsan porttitor, facilisis luctus, metus.</li>
-          <li>Phasellus ultrices nulla quis nibh. Quisque a lectus. Donec consectetuer ligula vulputate sem tristique cursus. Nam nulla quam, gravida non, commodo a, sodales sit amet, nisi.</li>
-          <li>Pellentesque fermentum dolor. Aliquam quam lectus, facilisis auctor, ultrices ut, elementum vulputate, nunc.</li>
-        </ul>
-        <dl>
-          <dt>Definition list</dt>
-          <dd>Consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</dd>
-          <dt>Lorem ipsum dolor sit amet</dt>
-          <dd>Consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</dd>
-        </dl>
+        <md-block>
+            ---
+            layout: post
+            title:  "Using Vagrant"
+            date:   2018-08-03 12:00:00 +0300
+            categories: vagrant
+            ---
+            While developing, you might need to create a local environment that matches your production server more closely. And if you're on Windows (or Mac) and your server is on a Linux distribution, it'll be cumbersome troubelshooting OS specific bugs and errors.
+            There are a multiple variations of the virtual machine concept in the market; Docker, VirtualBox and VMWare, but Vagrant offers a scaled down, light version of the actual operating system known as boxes. These are capable of all essential functionality without the additional bulk or GUI, making it much faster and very efficient.
+            This is extremely beneficial especially when running resource-hungry platforms such as Hadoop from your VM.
+
+            In this tutorial we will set up Vagrant with Ubuntu 12 on Windows and install an Apache, MySQL and PHP (LAMP) server in the Ubuntu VM. This will create a PHP programming environment in your Virtual Machine. Phalcon PHP already has [a pre-configured box](https://) on Vagrant but for the purpose of learning we will install each component individually.
+
+            a. Install VirtualBox
+
+            b. Install Vagrant
+
+            c. Install Ubuntu VM
+
+            d. Install LAMP on Ubuntu VM
+            LAMP (Linux, Apache, MySQL and PHP)
+
+            e. View the server in a browser
+
+            f. In conclusion
+            These are the Vagrant commands you'll need to know:
+            `vagrant box add [ORG/BUILD]` - Add a new VM  
+            `vagrant init [ORG/BUILD]` - Initialize VM
+            `vagrant up` - Boot VM
+            `vagrant reload` - Restart VM
+            `vagrant halt` - Shut down VM
+            `exit` - Quit Vagrant
+
+            Boxes are available online here from [providers](https://app.vagrantup.com/boxes/search)
+
+            Lastly, note that all the commands must be done locally from the directory in which you want or have the virtual machine installed.
+
+        </md-block>
       </article>
     </main>
 
