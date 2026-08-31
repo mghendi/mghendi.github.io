@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Samuel Mwamburi Mghendi</title>
+  <link rel="icon" type="image/png" href="favicon.png">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #ffffff;
+      --fg: #000000;
+      --muted: #666666;
+      --accent: #8B4513;
+      --border: #cccccc;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--fg);
+      font-family: Consolas, monospace;
+      font-weight: 300;
+      min-height: 100vh;
+      cursor: default;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.5rem 2.5rem;
+      background: linear-gradient(to bottom, rgba(255,255,255,0.95) 0%, transparent 100%);
+    }
+    .nav-menu { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 0.8rem; font-weight: 400; letter-spacing: -0.02em; color: #000000; cursor: pointer; display: flex; align-items: center; gap: 0.6rem; }
+    .nav-menu span { display: flex; flex-direction: column; gap: 4px; }
+    .nav-menu span i { display: block; width: 18px; height: 1px; background: #000000; }
+    .nav-logo { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 1.4rem; font-weight: 400; letter-spacing: -0.02em; color: #000000; cursor: pointer; }
+    .nav-logo:hover { color: var(--accent); }
+    .nav-right { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 0.8rem; font-weight: 400; letter-spacing: -0.02em; color: #000000; cursor: pointer; }
+    .nav-right:hover { color: var(--fg); }
+
+    /* ── VIEWS ── */
+    .view { display: none; }
+    .view.active { display: block; }
+
+    /* ── LIST VIEW ── */
+    #list-view { padding-top: 0; }
+
+    .list-header {
+      padding: 7rem 2.5rem 2rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+    }
+    .list-header h1 {
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      font-size: clamp(30px, 5vw, 60px);
+      font-weight: 400;
+      letter-spacing: -0.02em;
+      color: #000000;
+    }
+    .list-header .filter-label {
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      font-size: 0.6rem;
+      font-weight: 400;
+      letter-spacing: -0.02em;
+      color: #000000;
+    }
+
+    .project-list { list-style: none; }
+
+    .project-item {
+      border-bottom: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .project-item a {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      padding: 1.8rem 2.5rem;
+      text-decoration: none;
+      color: var(--fg);
+      position: relative;
+      z-index: 1;
+      transition: color 0.3s ease;
+    }
+
+    .project-item:hover a { color: var(--fg); }
+
+    .project-item .proj-name {
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      font-size: clamp(60px, 10vw, 120px);
+      font-weight: 400;
+      line-height: 0.9;
+      letter-spacing: -0.02em;
+      transition: transform 0.4s ease, color 0.3s ease;
+      display: block;
+    }
+
+    .project-item:hover .proj-name {
+      color: var(--accent);
+      transform: translateX(12px);
+    }
+
+    .project-item .proj-year {
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      font-size: 16px;
+      font-weight: 400;
+      letter-spacing: -0.02em;
+      color: #000000;
+      white-space: nowrap;
+      align-self: center;
+      transition: color 0.3s ease;
+      margin-left: 2rem;
+    }
+
+    .project-item:hover .proj-year { color: var(--fg); }
+
+    /* Hover image reveal */
+    .project-item .hover-img {
+      position: absolute;
+      right: 0; top: 0; bottom: 0;
+      width: 42%;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+      overflow: hidden;
+      z-index: 0;
+    }
+    .project-item .hover-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .project-item:hover .hover-img { opacity: 1; }
+
+    /* Overlay gradient on hover */
+    .project-item .hover-img::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: transparent;
+      z-index: 1;
+    }
+
+    /* ── DETAIL VIEW ── */
+    #detail-view {
+      min-height: 100vh;
+    }
+
+    .detail-hero {
+      position: relative;
+      height: 55vh;
+      min-height: 320px;
+      overflow: hidden;
+    }
+    .detail-hero img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .detail-hero-text {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: linear-gradient(to top, rgba(150, 150, 150, 0.6), transparent);
+      padding: 2rem 2.5rem 1rem;
+    }
+    .detail-hero-text h1 {
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      font-size: clamp(60px, 10vw, 120px);
+      font-weight: 400;
+      line-height: 0.88;
+      letter-spacing: -0.02em;
+      color: #ffffff;
+    }
+
+    .detail-meta {
+      border-bottom: 1px solid var(--border);
+      padding: 2.5rem 2.5rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 2rem;
+    }
+    .meta-col {}
+    .meta-label {
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      font-size: 0.6rem;
+      font-weight: 400;
+      letter-spacing: -0.02em;
+      color: #000000;
+      margin-bottom: 0.6rem;
+    }
+    .meta-value {
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      font-size: 1.5rem;
+      font-weight: 400;
+      letter-spacing: -0.02em;
+      color: #000000;
+      line-height: 1.2;
+    }
+    .meta-value.small {
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      font-size: 0.85rem;
+      font-weight: 400;
+      letter-spacing: -0.02em;
+      line-height: 1.6;
+    }
+    .meta-link {
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      color: #000000;
+      text-decoration: none;
+      font-size: 0.75rem;
+      font-weight: 400;
+      letter-spacing: -0.02em;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      margin-top: 0.3rem;
+      border-bottom: 1px solid #000000;
+      padding-bottom: 1px;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .meta-link:hover { color: var(--fg); border-color: var(--fg); }
+    .meta-link::after { content: '↗'; font-size: 0.7rem; }
+
+    .detail-body {
+      max-width: 680px;
+      padding: 3rem 2.5rem 5rem;
+    }
+    .detail-body p {
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      font-size: 1rem;
+      line-height: 1.85;
+      color: var(--muted);
+      font-weight: 300;
+    }
+
+    .back-btn {
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.65rem;
+      font-weight: 400;
+      letter-spacing: -0.02em;
+      color: #000000;
+      cursor: pointer;
+      padding: 1.2rem 2.5rem;
+      border-bottom: 1px solid #000000;
+      width: 100%;
+      background: none;
+      border: none;
+      border-bottom: 1px solid #000000;
+      text-align: left;
+      transition: color 0.2s;
+      margin-top: 5rem;
+    }
+    .back-btn:hover { color: var(--fg); }
+    .back-btn::before { content: '←'; font-size: 0.9rem; }
+
+    /* ── ABOUT VIEW ── */
+    #about-view {
+      padding-top: 7rem;
+      max-width: 680px;
+      margin: 0 auto;
+      padding-left: 2.5rem;
+      padding-right: 2.5rem;
+      padding-bottom: 5rem;
+    }
+    #about-view h2 {
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      font-size: clamp(60px, 10vw, 120px);
+      font-weight: 400;
+      letter-spacing: -0.02em;
+      color: #000000;
+      margin-bottom: 2rem;
+    }
+    #about-view p {
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      font-size: 1.1rem;
+      line-height: 1.85;
+      color: var(--muted);
+      margin-bottom: 1.2rem;
+    }
+    .timeline-list { margin-top: 3rem; list-style: none; }
+    .timeline-list li {
+      border-top: 1px solid var(--border);
+      padding: 1.5rem 0;
+    }
+    .timeline-list li .tl-year {
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      font-size: 16px;
+      font-weight: 400;
+      letter-spacing: -0.02em;
+      color: #000000;
+      margin-bottom: 0.3rem;
+    }
+    .timeline-list li .tl-role {
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      font-size: 1rem;
+      font-weight: 400;
+      letter-spacing: -0.02em;
+      color: #000000;
+      margin-bottom: 0.3rem;
+    }
+    .timeline-list li .tl-desc {
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      font-size: 0.95rem;
+      font-weight: 400;
+      color: #000000;
+      line-height: 1.7;
+    }
+    .tl-link { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; color: #000000; text-decoration: none; font-weight: 400; }
+    .tl-link:hover { text-decoration: underline; }
+
+    /* ── OVERLAY MENU ── */
+    .overlay-menu {
+      position: fixed;
+      inset: 0;
+      background: rgba(8,8,8,0.97);
+      z-index: 200;
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      padding: 3rem;
+    }
+    .overlay-menu.open { display: flex; }
+    .overlay-menu .close-btn {
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      position: absolute;
+      top: 1.5rem; right: 2.5rem;
+      font-size: 1.5rem;
+      font-weight: 400;
+      cursor: pointer;
+      color: #ffffff;
+      background: none; border: none;
+    }
+    .overlay-menu .close-btn:hover { color: var(--fg); }
+    .overlay-menu nav-item {
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      display: block;
+      font-size: clamp(60px, 10vw, 120px);
+      font-weight: 400;
+      letter-spacing: -0.02em;
+      color: #ffffff;
+      cursor: pointer;
+      transition: color 0.2s;
+      line-height: 1.1;
+    }
+    .overlay-menu nav-item:hover { color: var(--fg); }
+    .overlay-contact {
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      position: absolute;
+      bottom: 2.5rem; left: 3rem;
+      font-size: 0.7rem;
+      font-weight: 400;
+      letter-spacing: -0.02em;
+      color: #ffffff;
+    }
+    .overlay-contact a { color: #ffffff; text-decoration: none; }
+
+    @media (max-width: 640px) {
+      .project-item .hover-img { display: none; }
+      .detail-meta { grid-template-columns: 1fr 1fr; }
+      nav { padding: 1.2rem 1.5rem; }
+      .list-header { padding: 6rem 1.5rem 1.5rem; }
+      .project-item a { padding: 1.2rem 1.5rem; }
+      .detail-hero-text { left: 1.5rem; right: 1.5rem; }
+      .detail-meta { padding: 2rem 1.5rem; }
+      .detail-body { padding: 2.5rem 1.5rem 4rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── NAV ── -->
+<nav>
+  <div class="nav-menu" onclick="toggleMenu()">
+    <span><i></i><i></i><i></i></span>
+    Menu
+  </div>
+  <div class="nav-logo" onclick="showView('list')">127.0.0.1</div>
+  <div class="nav-right" onclick="showView('about')">About</div>
+</nav>
+
+<!-- ── OVERLAY MENU ── -->
+<div class="overlay-menu" id="overlay-menu">
+  <button class="close-btn" onclick="toggleMenu()">✕</button>
+  <nav-item onclick="showView('list'); toggleMenu()">Projects</nav-item>
+  <nav-item onclick="showView('about'); toggleMenu()">About</nav-item>
+  <div class="overlay-contact">
+    <a href="mailto:sam.mwamburi@gmail.com">sam.mwamburi@gmail.com</a>
+  </div>
+</div>
+
+<!-- ── LIST VIEW ── -->
+<div id="list-view" class="view active">
+  <div class="list-header">
+    <h1>Samuel Mwamburi Mghendi</h1>
+    <span class="filter-label">Projects</span>
+  </div>
+  <ul class="project-list" id="project-list"></ul>
+</div>
+
+<!-- ── DETAIL VIEW ── -->
+<div id="detail-view" class="view">
+  <button class="back-btn" onclick="showView('list')">All Projects</button>
+  <div class="detail-hero">
+    <img id="d-hero" src="" alt="">
+    <div class="detail-hero-text">
+      <h1 id="d-title"></h1>
+    </div>
+  </div>
+  <div class="detail-meta" id="d-meta"></div>
+  <div class="detail-body">
+    <p id="d-desc"></p>
+  </div>
+</div>
+
+<!-- ── ABOUT VIEW ── -->
+<div id="about-view" class="view">
+  <h2>About</h2>
+  <p>Information management specialist with close to seven years of experience developing data-driven solutions for humanitarian and environmental initiatives.</p>
+  <p>Worked with multiple international agencies and entities, including UNEP, UNICEF, PATH, SDI, USAID, and the University of Amsterdam.</p>
+  <p>Based in Nairobi, Kenya.</p>
+  <ul class="timeline-list">
+    <li>
+      <div class="tl-year">2017 – 2018</div>
+      <div class="tl-role">Information Management Intern — UNEP</div>
+      <div class="tl-desc">Led the redevelopment of <a class="tl-link" href="https://wedocs.unep.org/" target="_blank">UNEP's Online Document Repository</a>.</div>
+    </li>
+    <li>
+      <div class="tl-year">2019 – 2022</div>
+      <div class="tl-role">Information Management Specialist — UNEP</div>
+      <div class="tl-desc">Designed and developed the data pipeline for <a class="tl-link" href="https://appsportal.unep.org/?category=Dashboard" target="_blank">UNEP's Quarterly Business Review</a>.</div>
+    </li>
+    <li>
+      <div class="tl-year">2022</div>
+      <div class="tl-role">Data Science Fellow — Analytics for a Better World (University of Amsterdam)</div>
+      <div class="tl-desc">Developed optimization models to improve plastic waste collection in Nairobi.</div>
+    </li>
+    <li>
+      <div class="tl-year">2023 – 2024</div>
+      <div class="tl-role">Data Analyst — Ona</div>
+      <div class="tl-desc">Improved data solutions for humanitarian clients including UNICEF, PATH, and SDI. Enhanced data pipelines, led data visualization design, and supported geospatial analyses.</div>
+    </li>
+    <li>
+      <div class="tl-year">2024 – Present</div>
+      <div class="tl-role">Data Analytics Consultant — UNEP</div>
+      <div class="tl-desc">Streamlining project performance reporting, quantifying impacts of humanitarian efforts, and developing the <a class="tl-link" href="https://appsportal.unep.org/?category=Dashboard" target="_blank">Partnership and Budget Tracker</a>.</div>
+    </li>
+  </ul>
+</div>
+
+<script>
+  const PROJECTS = [
+    {
+      id: "qbr",
+      name: "Quarterly Business Review",
+      year: "2019 – Present",
+      image: "qbr.png",
+      client: "UNEP",
+      role: "Data Analyst",
+      stack: "Laravel · Databricks · PySpark · Power BI · Azure",
+      datasources: "UMOJA SAP · SPPM · IPMR",
+      url: "https://appsportal.unep.org/?category=Dashboard",
+      description: "End-to-end data pipeline and reporting application powering UNEP's quarterly performance reviews across 400+ active projects. The system ingests data from multiple enterprise sources, applies complex transformation logic in PySpark notebooks on Databricks, and surfaces results through a Laravel web application and Power BI semantic models — giving senior management a real-time view of programme delivery against targets."
+    },
+    {
+      id: "partnership",
+      name: "Partnership & Budget Tracker",
+      year: "2024",
+      image: "partnership.png",
+      client: "UNEP PPD",
+      role: "Data Analyst",
+      stack: "Databricks · Power BI · SQL",
+      datasources: "UMOJA SAP · Donor Agreements",
+      url: "https://appsportal.unep.org/?category=Dashboard",
+      description: "Real-time dashboard tracking partnerships, donor agreements, and budget utilization across UNEP's programme portfolio. Consolidates data from SAP and internal donor agreement records to provide the Policy and Programme Division with a single source of truth for funding status and expenditure against approved budgets."
+    },
+    {
+      id: "cpims",
+      name: "UNICEF Cambodia CPIMS",
+      year: "2023 – 2024",
+      image: "cpims.jpeg",
+      client: "UNICEF Cambodia",
+      role: "Data Analyst",
+      stack: "KoboToolbox · ODK · PostgreSQL · Python",
+      datasources: "Case management records · Government registry",
+      url: "https://cpims.mosvy.gov.kh/",
+      description: "Data pipeline and analytics layer for Cambodia's Child Protection Information Management System, deployed in partnership with the Ministry of Social Affairs. Standardized data collection across case workers, automated monthly reporting, and built dashboards tracking child protection outcomes at national and provincial levels."
+    },
+    {
+      id: "ndcs",
+      name: "NDCs for Children",
+      year: "2024",
+      image: "ndcs.jpeg",
+      client: "UNICEF LACRO",
+      role: "Data Analyst",
+      stack: "Python · D3.js · BigQuery",
+      datasources: "UNFCCC NDC Registry · UNICEF Country Data",
+      url: "https://ndcsforeverychild.unicef.org",
+      description: "Interactive data platform analyzing Nationally Determined Contributions (NDCs) through a child rights lens across 33 Latin American and Caribbean countries. The tool allows policymakers and advocates to identify climate commitments — or gaps — that directly affect children, supporting UNICEF's advocacy with national governments ahead of climate negotiations."
+    },
+    {
+      id: "rtvama",
+      name: "RT‑VaMA",
+      year: "2023",
+      image: "rtvama.png",
+      client: "UNICEF Philippines",
+      role: "Data Analyst",
+      stack: "ODK · Python · Power BI · Ona Data",
+      datasources: "Vaccination records · Health facility registers",
+      url: "https://ona.io/home/standardizing-vaccination-coverage-monitoring-with-the-rt-vama-toolkit/",
+      description: "Real-Time Vaccination Monitoring and Analysis toolkit, standardizing vaccination coverage monitoring across municipalities in the Philippines. Built to give local health teams immediate visibility into immunization gaps, the toolkit automated data collection from health workers in the field and fed nightly updates into Power BI dashboards reviewed by provincial coordinators."
+    },
+    {
+      id: "mwangaza",
+      name: "Mwangaza",
+      year: "2022",
+      image: "mwangaza.png",
+      client: "University of Amsterdam",
+      role: "Data Science Fellow",
+      stack: "Python · OR-Tools · GeoPandas · NetworkX",
+      datasources: "Nairobi geospatial data · Waste collection records",
+      url: "https://github.com/mghendi/",
+      description: "Vehicle routing optimization models to improve plastic waste collection across Nairobi's informal settlements, developed as part of the Analytics for a Better World fellowship at the University of Amsterdam Business School. Applied Google OR-Tools to optimize collection routes, reducing estimated travel distance by over 20% while increasing tonnage collected per trip — demonstrating how operations research can serve environmental and social good."
+    }
+  ];
+
+  function buildList() {
+    const ul = document.getElementById('project-list');
+    ul.innerHTML = PROJECTS.map(p => `
+      <li class="project-item">
+        <a href="#${p.id}" onclick="showDetail('${p.id}'); return false;">
+          <span class="proj-name">${p.name}</span>
+          <span class="proj-year">${p.year}</span>
+        </a>
+        <div class="hover-img">
+          <img src="${p.image}" alt="${p.name}" loading="lazy">
+        </div>
+      </li>
+    `).join('');
+  }
+
+  function showDetail(id) {
+    const p = PROJECTS.find(x => x.id === id);
+    if (!p) return;
+
+    document.getElementById('d-hero').src = p.image;
+    document.getElementById('d-hero').alt = p.name;
+    document.getElementById('d-title').textContent = p.name;
+    document.getElementById('d-desc').textContent = p.description;
+
+    const linkHTML = p.url ? `<a class="meta-link" href="${p.url}" target="_blank">View Project</a>` : '';
+
+    document.getElementById('d-meta').innerHTML = `
+      <div class="meta-col">
+        <div class="meta-label">Client</div>
+        <div class="meta-value">${p.client}</div>
+      </div>
+      <div class="meta-col">
+        <div class="meta-label">Year</div>
+        <div class="meta-value">${p.year}</div>
+      </div>
+      <div class="meta-col">
+        <div class="meta-label">Role</div>
+        <div class="meta-value">${p.role}</div>
+      </div>
+      <div class="meta-col">
+        <div class="meta-label">Stack</div>
+        <div class="meta-value small">${p.stack}</div>
+      </div>
+      <div class="meta-col">
+        <div class="meta-label">Data Sources</div>
+        <div class="meta-value small">${p.datasources}</div>
+      </div>
+      ${linkHTML ? `<div class="meta-col"><div class="meta-label">Link</div>${linkHTML}</div>` : ''}
+    `;
+
+    showView('detail');
+    window.scrollTo({ top: 0, behavior: 'instant' });
+    history.pushState({ view: 'detail', id }, '', `#${id}`);
+  }
+
+  function showView(name) {
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.getElementById(name + '-view').classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'instant' });
+    if (name === 'list') history.pushState({ view: 'list' }, '', window.location.pathname);
+  }
+
+  function toggleMenu() {
+    document.getElementById('overlay-menu').classList.toggle('open');
+  }
+
+  // Handle browser back/forward
+  window.addEventListener('popstate', (e) => {
+    if (e.state?.view === 'detail') showDetail(e.state.id);
+    else showView('list');
+  });
+
+  // Handle direct URL hash on load
+  function handleHash() {
+    const hash = location.hash.slice(1);
+    if (hash && PROJECTS.find(p => p.id === hash)) showDetail(hash);
+  }
+
+  buildList();
+  handleHash();
+</script>
+</body>
+</html>
